@@ -1,0 +1,11 @@
+.header {
+    padding: 10px;
+    border-bottom: 1px solid red;
+}
+
+.roomsHolder {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(8, 200px);
+    gap: 20px;
+}

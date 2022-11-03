@@ -1,8 +1,9 @@
-import React, { createContext } from "react";
+import { createContext } from "react";
 import ReactDOM from "react-dom/client";
 import { io, Socket } from "socket.io-client";
+import { HashRouter } from "react-router-dom";
 
-import App from "./App";
+import Router from "./router";
 
 import "./index.css";
 
@@ -15,7 +16,9 @@ export const AppContext = createContext<Socket | null>(null);
 const wsServer = io("http://localhost:5000");
 
 root.render(
-  <AppContext.Provider value={wsServer}>
-    <App />
-  </AppContext.Provider>
+  <HashRouter>
+    <AppContext.Provider value={wsServer}>
+      <Router />
+    </AppContext.Provider>
+  </HashRouter>
 );

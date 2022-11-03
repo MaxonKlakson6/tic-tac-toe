@@ -1,0 +1,19 @@
+.wrapper {
+    border: 1px solid green;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+}
+
+.wrapper > div {
+    padding: 10px;
+}
+
+.inputHolder {
+    border-bottom: 1px solid green;
+}
+
+.controlButtonsHolder {
+    display: flex;
+    justify-content: space-between;
+}
