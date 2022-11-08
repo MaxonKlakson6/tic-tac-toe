@@ -22,9 +22,9 @@ webSocketServer.on("connect", (socket) => {
     const newRoom = {
       roomName,
       id: uuid(),
-      users: {
-        count: 0,
-      },
+      users: [],
+      fields: ["", "", "", "", "", "", "", "", ""],
+      turn: "X",
     };
 
     rooms.push(newRoom);
@@ -32,26 +32,60 @@ webSocketServer.on("connect", (socket) => {
 
     webSocketServer.emit("send-rooms", rooms);
   });
+
   socket.on("get-rooms", () => {
     socket.emit("send-rooms", rooms);
   });
+
   socket.on("join-room", (data) => {
     const { userName, idToJoin } = data;
 
     const roomToJoin = rooms.find((room) => room.id === idToJoin);
 
-    if (roomToJoin.users.count < 2) {
-      roomToJoin.users[userName] = {
-        id: socket.id,
-      };
-      roomToJoin.users.count += 1;
+    const usersCount = roomToJoin.users.length;
 
-      socket.emit("join-permission", roomToJoin.id, roomToJoin.roomName);
+    if (usersCount < 2) {
+      const gameSymbol = usersCount === 0 ? "X" : "O";
+
+      const newUser = {
+        id: socket.id,
+        name: userName,
+        symbol: gameSymbol,
+      };
+
+      roomToJoin.users.push(newUser);
+
+      socket.join(roomToJoin.roomName);
+      socket.emit("join-permission", roomToJoin.roomName);
+      socket.emit("joined", newUser, roomToJoin);
       webSocketServer.emit("send-rooms", rooms);
     }
   });
-  socket.on("leave-room", () => {
-    console.log("leave");
+
+  socket.on("get-user", (userId, roomId) => {
+    const room = rooms.find((room) => room.id === roomId);
+
+    if (room) {
+      const user = room.users.find((user) => user.id === userId);
+
+      socket.emit("room-user-info", room, user);
+    }
+  });
+
+  socket.on("change-turn", (roomId, userId) => {
+    const room = rooms.find((room) => room.id === roomId);
+
+    room.turn = room.turn === "X" ? "O" : "X";
+
+    webSocketServer.in(room.roomName).emit("update-room", room);
+  });
+
+  socket.on("change-field", (roomId, index, symbol) => {
+    const room = rooms.find((room) => room.id === roomId);
+
+    room.fields[index] = symbol;
+
+    webSocketServer.in(room.roomName).emit("update-room", room);
   });
 });
 

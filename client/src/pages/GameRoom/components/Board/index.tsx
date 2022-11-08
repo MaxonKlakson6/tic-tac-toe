@@ -1,10 +1,23 @@
 import styles from "./styles.module.css";
-const Board = () => {
+import { Room, GameSymbols } from "../../../Home/types";
+
+interface BoardProps {
+  room: Room | null;
+  handleChangeTurn: (index: number, item: GameSymbols) => void;
+}
+
+const Board = ({ room, handleChangeTurn }: BoardProps) => {
   const mock = ["X", "O", "X", "O", "X", "O", "", "", ""];
   return (
     <div className={styles.board}>
-      {mock.map((item) => (
-        <div className={styles.cell}>{item}</div>
+      {room?.fields.map((item, index) => (
+        <div
+          key={index}
+          className={styles.cell}
+          onClick={() => handleChangeTurn(index, item)}
+        >
+          {item}
+        </div>
       ))}
     </div>
   );

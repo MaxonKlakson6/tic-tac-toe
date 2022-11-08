@@ -51,6 +51,7 @@ const HomePageContainer: FC = () => {
 
   const handleJoinRoom = (event: FormEvent) => {
     event.preventDefault();
+
     if (form.yourName.trim()) {
       wsServer?.emit("join-room", { idToJoin, userName: form.yourName });
       resetField("yourName");
@@ -64,21 +65,14 @@ const HomePageContainer: FC = () => {
     setRooms(rooms);
   });
 
-  wsServer
-    ?.off("join-permission")
-    .on("join-permission", (id: string, roomName: string) => {
-      navigate(`/game-room/${roomName}`);
-      console.log(roomName);
-    });
-
-  wsServer?.on("send-rooms", (rooms) => {
-    setRooms(rooms);
+  wsServer?.off("join-permission").on("join-permission", (roomName: string) => {
+    navigate(`/game-room/${roomName}`);
   });
 
   useEffect(() => {
     wsServer?.emit("get-rooms");
   }, []);
-  console.log(rooms);
+
   return (
     <HomeLayout
       rooms={rooms}

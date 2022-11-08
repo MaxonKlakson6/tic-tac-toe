@@ -38,7 +38,7 @@ const HomeLayout: FC<HomeLayoutProps> = ({
           <RoomItem
             key={room.id}
             roomName={room.roomName}
-            count={room.users.count}
+            count={room.users.length}
             id={room.id}
             onStartJoin={handleStartJoin}
           />

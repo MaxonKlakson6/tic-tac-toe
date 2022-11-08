@@ -4,7 +4,7 @@ import styles from "./styles.module.css";
 
 interface RoomItemProps {
   roomName: string;
-  count: 0 | 1 | 2;
+  count: number;
   id: string;
   onStartJoin: (id: string) => void;
 }
