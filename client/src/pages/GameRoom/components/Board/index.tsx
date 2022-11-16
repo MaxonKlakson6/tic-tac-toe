@@ -1,13 +1,15 @@
-import styles from "./styles.module.css";
+import { FC } from "react";
+
 import { Room, GameSymbols } from "../../../Home/types";
+
+import styles from "./styles.module.css";
 
 interface BoardProps {
   room: Room | null;
   handleChangeTurn: (index: number, item: GameSymbols) => void;
 }
 
-const Board = ({ room, handleChangeTurn }: BoardProps) => {
-  const mock = ["X", "O", "X", "O", "X", "O", "", "", ""];
+const Board: FC<BoardProps> = ({ room, handleChangeTurn }) => {
   return (
     <div className={styles.board}>
       {room?.fields.map((item, index) => (

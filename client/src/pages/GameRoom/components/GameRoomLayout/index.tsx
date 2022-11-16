@@ -1,22 +1,40 @@
+import { FC } from "react";
+
 import Board from "../Board";
+import GameOverModal from "../GameOverModal";
+import UsersInfo from "../UsersInfo";
+
 import { GameSymbols, Room } from "../../../Home/types";
+import { GameOverMessage, User } from "../../types";
+
+import styles from "./styles.module.css";
 
 interface GameRoomLayoutProps {
   room: Room | null;
+  player: User | null;
+  message: GameOverMessage;
   handleChangeTurn: (index: number, item: GameSymbols) => void;
+  handleLeaveRoom: () => void;
 }
 
-const GameRoomLayout = ({ room, handleChangeTurn }: GameRoomLayoutProps) => {
+const GameRoomLayout: FC<GameRoomLayoutProps> = ({
+  room,
+  player,
+  message,
+  handleChangeTurn,
+  handleLeaveRoom,
+}) => {
   return (
     <div>
-      <header style={{ padding: 20, borderBottom: "1px solid red" }}>
-        <button>Leave</button>
+      <header className={styles.header}>
+        <button onClick={handleLeaveRoom}>Leave</button>
       </header>
-      <div
-        style={{ display: "flex", justifyContent: "center", marginTop: "50px" }}
-      >
+      <div className={styles.boardHolder}>
         <Board room={room} handleChangeTurn={handleChangeTurn} />
-        <div>aboba</div>
+        <UsersInfo users={room?.users} player={player} />
+        {message && (
+          <GameOverModal message={message} handleLeaveRoom={handleLeaveRoom} />
+        )}
       </div>
     </div>
   );

@@ -1,0 +1,7 @@
+.wrapper {
+    align-self: center;
+}
+
+.userInfo:not(:last-child) {
+    margin-bottom: 20px;
+}

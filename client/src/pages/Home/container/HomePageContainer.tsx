@@ -6,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
 import HomeLayout from "../components/HomeLayout";
 
@@ -13,8 +14,6 @@ import { useForm } from "../../../hooks";
 import { AppContext } from "../../../index";
 
 import { FormValues, ModalKeywords, Room } from "../types";
-import { useNavigate } from "react-router-dom";
-import { ROUTE_NAMES } from "../../../router/routeNames";
 
 const HomePageContainer: FC = () => {
   const wsServer = useContext(AppContext);
@@ -35,10 +34,10 @@ const HomePageContainer: FC = () => {
   const handleCreateRoom = (event: FormEvent): void => {
     event.preventDefault();
     if (form.roomName.trim()) {
-      wsServer?.emit("create-room", form.roomName, () => {
-        resetField("roomName");
-        handleToggleModal("");
-      });
+      wsServer?.emit("create-room", form.roomName);
+
+      resetField("roomName");
+      handleToggleModal("");
     } else {
       alert("wrong name");
     }
@@ -54,6 +53,7 @@ const HomePageContainer: FC = () => {
 
     if (form.yourName.trim()) {
       wsServer?.emit("join-room", { idToJoin, userName: form.yourName });
+
       resetField("yourName");
       handleToggleModal("");
     } else {
@@ -61,13 +61,18 @@ const HomePageContainer: FC = () => {
     }
   };
 
-  wsServer?.off("send-rooms").on("send-rooms", (rooms) => {
+  wsServer?.off("send-rooms").on("send-rooms", (rooms: Room[]) => {
     setRooms(rooms);
   });
 
-  wsServer?.off("join-permission").on("join-permission", (roomName: string) => {
-    navigate(`/game-room/${roomName}`);
-  });
+  wsServer
+    ?.off("join-permission")
+    .on("join-permission", (roomName: string, userId: string) => {
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("roomId", idToJoin);
+
+      navigate(`/game-room/${roomName}`);
+    });
 
   useEffect(() => {
     wsServer?.emit("get-rooms");

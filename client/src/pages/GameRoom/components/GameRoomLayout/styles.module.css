@@ -1,0 +1,10 @@
+.header {
+    padding: 20px;
+    border-bottom: 1px solid red;
+}
+
+.boardHolder {
+    display: flex;
+    justify-content: center;
+    margin-top: 50px;
+}

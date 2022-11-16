@@ -1,0 +1,33 @@
+.wrapper {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    background-color: black;
+    opacity: .3;
+}
+
+.modal {
+    width: 200px;
+    height: 100px;
+    z-index: 2;
+    position: absolute;
+    left: calc(50% - 100px);
+    top: calc(50% - 50px);
+    background-color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.text {
+    flex-grow: 1;
+    padding: 10px;
+    text-align: center;
+}
+
+.btn {
+    cursor: pointer;
+    padding: 10px;
+}

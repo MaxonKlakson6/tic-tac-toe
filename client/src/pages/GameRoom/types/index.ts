@@ -5,3 +5,5 @@ export interface User {
   name: string;
   symbol: GameSymbols;
 }
+
+export type GameOverMessage = "Win: X" | "Win: O" | "Draw" | "";

@@ -1,8 +1,9 @@
 import { ChangeEvent, FC, FormEvent } from "react";
 
-import { ModalKeywords } from "../../types";
 import ModalCreateRoom from "../ModalCreateRoom";
 import ModalJoinRoom from "../ModalJoinRoom";
+
+import { ModalKeywords } from "../../types";
 
 interface ModalWindowProps {
   modalKeyword: ModalKeywords;

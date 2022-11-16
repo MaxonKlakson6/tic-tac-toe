@@ -1,52 +1,67 @@
-import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../../index";
-import GameRoomLayout from "../components/GameRoomLayout";
-import { GameSymbols, Room } from "../../Home/types";
-import { User } from "../types";
+import { FC, useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-const GameRoomContainer = () => {
+import GameRoomLayout from "../components/GameRoomLayout";
+
+import { AppContext } from "../../../index";
+
+import { GameSymbols, Room } from "../../Home/types";
+import { GameOverMessage, User } from "../types";
+
+const GameRoomContainer: FC = () => {
   const wsServer = useContext(AppContext);
+  const navigate = useNavigate();
 
   const [room, setRoom] = useState<Room | null>(null);
   const [user, setUser] = useState<User | null>(null);
-  const [count, setCount] = useState(1);
+  const [gameOverMessage, setGameOverMessage] = useState<GameOverMessage>("");
 
-  wsServer?.off("joined").on("joined", (user, room) => {
-    setUser(user);
-    setRoom(room);
+  wsServer
+    ?.off("room-user-info")
+    .on("room-user-info", (room: Room, user: User) => {
+      setRoom(room);
+      setUser(user);
+    });
 
-    localStorage.setItem("userId", user.id);
-    localStorage.setItem("roomId", room.id);
+  wsServer?.off("update-room").on("update-room", (updatedRoom: Room) => {
+    setRoom(updatedRoom);
   });
 
-  wsServer?.off("room-user-info").on("room-user-info", (room, user) => {
-    setUser(user);
-    setRoom(room);
+  wsServer?.off("win").on("game-finished", (message: GameOverMessage) => {
+    setGameOverMessage(message);
   });
 
-  wsServer?.off("update-room").on("update-room", (room) => {
-    setRoom(room);
-  });
-
-  const handleChangeTurn = (index: number, item: GameSymbols) => {
-    if (!item && user?.symbol === room?.turn) {
-      wsServer?.emit("change-turn", room?.id, user?.id);
+  const handleChangeTurn = (index: number, item: GameSymbols): void => {
+    if (!item && room?.turn === user?.symbol) {
+      wsServer?.emit("change-turn", room?.id);
       wsServer?.emit("change-field", room?.id, index, user?.symbol);
     }
   };
 
+  const handleLeaveRoom = (): void => {
+    navigate("/");
+  };
+
   useEffect(() => {
-    const userId = localStorage.getItem("userId");
     const roomId = localStorage.getItem("roomId");
+    const userId = localStorage.getItem("userId");
 
     wsServer?.emit("get-user", userId, roomId);
+
+    return () => {
+      wsServer?.emit("leave-room", roomId, userId);
+      wsServer?.emit("reset-room", roomId);
+    };
   }, []);
 
   return (
-    <>
-      <GameRoomLayout room={room} handleChangeTurn={handleChangeTurn} />
-      <button onClick={() => setCount(count + 1)}>Click</button>
-    </>
+    <GameRoomLayout
+      room={room}
+      player={user}
+      handleChangeTurn={handleChangeTurn}
+      handleLeaveRoom={handleLeaveRoom}
+      message={gameOverMessage}
+    />
   );
 };
 
